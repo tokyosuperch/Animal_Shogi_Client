@@ -25,6 +25,6 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
-*.apk
-*.unitypackage
-*.exe
+# *.apk
+# *.unitypackage
+# *.exe
