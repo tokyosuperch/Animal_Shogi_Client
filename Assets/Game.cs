@@ -17,7 +17,8 @@ public class Game : MonoBehaviour {
     GameObject mykoma, enemykoma;
     int mykomanum = 0;
     int enemykomanum = 0;
-    bool myturn = true;
+    bool senteturn = true;
+    bool komauchimode = false;
 
     // Use this for initialization
     void Start() {
@@ -65,93 +66,38 @@ public class Game : MonoBehaviour {
     }
 
     public void komaclick(string komaname) {
-        GameObject destroyed, temporary;
-        destroyed = null;
-        if (myturn) {
-            if (komaname.Substring(0, 1) == "h") {
-                temporary = hiyoko[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "h") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = hiyoko[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "z") {
-                temporary = zou[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "z") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = zou[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "k") {
-                temporary = kirin[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "k") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = kirin[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "l") {
-                temporary = lion[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "l") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = lion[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (destroyed != null) Destroy(destroyed);
-        } else {
-            if (komaname.Substring(0, 1) == "h") {
-                temporary = hiyoko[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "H") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = hiyoko[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "z") {
-                temporary = zou[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "Z") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = zou[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "k") {
-                temporary = kirin[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "K") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = kirin[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (komaname.Substring(0, 1) == "l") {
-                temporary = lion[int.Parse(komaname.Substring(1, 1))];
-                if (temporary.name.Substring(0, 1) == "L") {
-                    moving = temporary;
-                    movemode = true;
-                } else if (movemode) {
-                    destroyed = lion[int.Parse(komaname.Substring(1, 1))];
-                    masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
-                }
-            }
-            if (destroyed != null) Destroy(destroyed);
+        GameObject destroyed = null;
+        GameObject temporary = null;
+        if (komaname.StartsWith("h", false, null)) {
+            temporary = hiyoko[int.Parse(komaname.Substring(1, 1))];
+        } else if (komaname.StartsWith("z", false, null)) {
+            temporary = zou[int.Parse(komaname.Substring(1, 1))];
+        } else if (komaname.StartsWith("k", false, null)) {
+            temporary = kirin[int.Parse(komaname.Substring(1, 1))];
+        } else if (komaname.StartsWith("l", false, null)){
+            temporary = lion[int.Parse(komaname.Substring(1, 1))];
         }
+        if (senteturn) {
+            char[] initial = temporary.name.Substring(0, 1).ToCharArray();
+            if (char.IsLower(initial[0])) {
+                moving = temporary;
+                movemode = true;
+            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                destroyed = temporary;
+                masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
+            }
+        } else {
+            char[] initial = temporary.name.Substring(0, 1).ToCharArray();
+            if (char.IsUpper(initial[0])) {
+                moving = temporary;
+                movemode = true;
+            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                destroyed = temporary;
+                masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
+            }
+        }
+        if (moving.name.Length == 1) { komauchimode = true; } else { komauchimode = false; }
+        if (destroyed != null) Destroy(destroyed);
         // beforex = int.Parse(moving.name.Substring(1, 1));
         // beforey = int.Parse(moving.name.Substring(1, 2));
     }
@@ -170,13 +116,13 @@ public class Game : MonoBehaviour {
         string temp = moving.name;
         moving.name = temp.Substring(0, 1) + afterx + aftery;
         movemode = false;
-        if (myturn) { myturn = false; } else { myturn = true; }
+        if (senteturn) { senteturn = false; } else { senteturn = true; }
     }
 
     public void Destroy(GameObject destroyed) {
         GameObject destination;
         int okiba, angle;
-        if (myturn) {
+        if (senteturn) {
             destination = enemykoma;
             angle = 180;
             okiba = enemykomanum;
