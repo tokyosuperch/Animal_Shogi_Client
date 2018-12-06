@@ -20,9 +20,9 @@ public class Game : MonoBehaviour {
     int enemykomanum = 0;
     bool senteturn = true;
     bool komauchimode = false;
-    Image img;
     public Sprite himage;
     public Sprite nimage;
+    GameObject destroyed;
 
     // Use this for initialization
     void Start() {
@@ -70,7 +70,7 @@ public class Game : MonoBehaviour {
     }
 
     public void komaclick(string komaname) {
-        GameObject destroyed = null;
+        destroyed = null;
         GameObject temporary = null;
         if (komaname.StartsWith("h", false, null)) {
             temporary = hiyoko[int.Parse(komaname.Substring(1, 1))];
@@ -85,6 +85,13 @@ public class Game : MonoBehaviour {
             char[] initial = temporary.name.Substring(0, 1).ToCharArray();
             if (char.IsLower(initial[0])) {
                 moving = temporary;
+                if (moving.name.Length >= 3) {
+                    beforex = int.Parse(moving.name.Substring(1, 1));
+                    beforey = int.Parse(moving.name.Substring(2, 1));
+                } else {
+                    beforex = -1;
+                    beforey = -1;
+                }
                 movemode = true;
             } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
                 destroyed = temporary;
@@ -94,6 +101,13 @@ public class Game : MonoBehaviour {
             char[] initial = temporary.name.Substring(0, 1).ToCharArray();
             if (char.IsUpper(initial[0])) {
                 moving = temporary;
+                if (moving.name.Length >= 3) {
+                    beforex = int.Parse(moving.name.Substring(1, 1));
+                    beforey = int.Parse(moving.name.Substring(2, 1));
+                } else {
+                    beforex = -1;
+                    beforey = -1;
+                }
                 movemode = true;
             } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
                 destroyed = temporary;
@@ -103,16 +117,16 @@ public class Game : MonoBehaviour {
         if (moving != null) {
             if (moving.name.Length == 1) { komauchimode = true; } else { komauchimode = false; }
         }
-        if (destroyed != null) Destroy(destroyed);
-        // beforex = int.Parse(moving.name.Substring(1, 1));
-        // beforey = int.Parse(moving.name.Substring(1, 2));
     }
 
     public void masuclick(string mess) {
         if (movemode == true && moving.transform.root.gameObject != mykoma && moving.transform.root.gameObject != enemykoma) {
             afterx = int.Parse(mess.Substring(0, 1));
             aftery = int.Parse(mess.Substring(1, 1));
-            Move();
+            if (canmove()) {
+                Move();
+                if (destroyed != null) Destroy(destroyed);
+            }
         }
     }
 
@@ -124,7 +138,7 @@ public class Game : MonoBehaviour {
         if (senteturn == true && afterx == 0 && temp.StartsWith("h", false, null)) {
             for (int i = 0; i <= 1; i++) {
                 if (moving == hiyoko[i]) {
-                    img = hiyoko[i].GetComponent<Image>();
+                    Image img = hiyoko[i].GetComponent<Image>();
                     img.sprite = nimage;
                     hiyokonari[i] = true;
                 }
@@ -133,7 +147,7 @@ public class Game : MonoBehaviour {
         if (senteturn == false && afterx == 3 && temp.StartsWith("H", false, null)) {
             for (int i = 0; i <= 1; i++) {
                 if (moving == hiyoko[i]) {
-                    img = hiyoko[i].GetComponent<Image>();
+                    Image img = hiyoko[i].GetComponent<Image>();
                     img.sprite = nimage;
                     hiyokonari[i] = true;
                 }
@@ -141,6 +155,44 @@ public class Game : MonoBehaviour {
         }
         movemode = false;
         if (senteturn) { senteturn = false; } else { senteturn = true; }
+    }
+
+    public bool canmove() {
+        if (komauchimode) return true;
+        if (afterx <= beforex + 1 && afterx >= beforex - 1 && aftery <= beforey + 1 && aftery >= beforey - 1) {
+            if (moving.name.StartsWith("h", false, null)) {
+                for (int i = 0; i <= 1; i++) {
+                    if (moving == hiyoko[i]) {
+                        if (hiyokonari[i]) {
+                            if (!(afterx == beforex + 1 && (aftery == beforey - 1 || aftery == beforey + 1))) return true;
+                        } else {
+                            if (afterx == beforex - 1 && aftery == beforey) return true;
+                        }
+                    }
+                }
+            }
+            if (moving.name.StartsWith("H", false, null)) {
+                for (int i = 0; i <= 1; i++) {
+                    if (moving == hiyoko[i]) {
+                        if (hiyokonari[i]) {
+                            if (!(afterx == beforex - 1 && (aftery == beforey - 1 || aftery == beforey + 1))) return true;
+                        } else {
+                            if (afterx == beforex + 1 && aftery == beforey) return true;
+                        }
+                    }
+                }
+            }
+            if (moving.name.StartsWith("z", true, null)) {
+                if (!(afterx == beforex || aftery == beforey)) return true;
+            }
+            if (moving.name.StartsWith("k", true, null)) {
+                if (afterx == beforex || aftery == beforey) return true;
+            }
+            if (moving.name.StartsWith("l", true, null)) return true;
+            return false;
+        } else {
+            return false;
+        }
     }
 
     public void Destroy(GameObject destroyed) {
@@ -162,7 +214,7 @@ public class Game : MonoBehaviour {
         if (destroyed.name.StartsWith("h", true, null)) {
             for (int i = 0; i <= 1; i++) {
                 if (destroyed == hiyoko[i] && hiyokonari[i] == true) {
-                    img = hiyoko[i].GetComponent<Image>();
+                    Image img = hiyoko[i].GetComponent<Image>();
                     hiyokonari[i] = false;
                     img.sprite = himage;
                 }
