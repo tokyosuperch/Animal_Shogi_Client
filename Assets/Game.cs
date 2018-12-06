@@ -7,18 +7,22 @@ using UnityEngine.EventSystems;
 public class Game : MonoBehaviour {
     GameObject[,] masume = new GameObject[4, 3];
     GameObject[] hiyoko = new GameObject[2];
+    bool[] hiyokonari = new bool[2];
     GameObject[] zou = new GameObject[2];
     GameObject[] kirin = new GameObject[2];
     GameObject[] lion = new GameObject[2];
-    public bool movemode = false;
+    bool movemode = false;
     int beforex, beforey;
     int afterx, aftery;
-    GameObject moving;
+    GameObject moving = null;
     GameObject mykoma, enemykoma;
     int mykomanum = 0;
     int enemykomanum = 0;
     bool senteturn = true;
     bool komauchimode = false;
+    Image img;
+    public Sprite himage;
+    public Sprite nimage;
 
     // Use this for initialization
     void Start() {
@@ -42,9 +46,9 @@ public class Game : MonoBehaviour {
     }
 
     public void komainit() {
-
         for (int i = 0; i < 2; i++) {
             hiyoko[i] = GameObject.Find("hiyoko" + i);
+            hiyokonari[i] = false;
         }
         hiyoko[0].name = "h21";
         hiyoko[1].name = "H11";
@@ -96,7 +100,9 @@ public class Game : MonoBehaviour {
                 masuclick(destroyed.name.Substring(1, 1) + destroyed.name.Substring(2, 1));
             }
         }
-        if (moving.name.Length == 1) { komauchimode = true; } else { komauchimode = false; }
+        if (moving != null) {
+            if (moving.name.Length == 1) { komauchimode = true; } else { komauchimode = false; }
+        }
         if (destroyed != null) Destroy(destroyed);
         // beforex = int.Parse(moving.name.Substring(1, 1));
         // beforey = int.Parse(moving.name.Substring(1, 2));
@@ -115,6 +121,24 @@ public class Game : MonoBehaviour {
         moving.transform.localPosition = new Vector3(0, 0);
         string temp = moving.name;
         moving.name = temp.Substring(0, 1) + afterx + aftery;
+        if (senteturn == true && afterx == 0 && temp.StartsWith("h", false, null)) {
+            for (int i = 0; i <= 1; i++) {
+                if (moving == hiyoko[i]) {
+                    img = hiyoko[i].GetComponent<Image>();
+                    img.sprite = nimage;
+                    hiyokonari[i] = true;
+                }
+            }
+        }
+        if (senteturn == false && afterx == 3 && temp.StartsWith("H", false, null)) {
+            for (int i = 0; i <= 1; i++) {
+                if (moving == hiyoko[i]) {
+                    img = hiyoko[i].GetComponent<Image>();
+                    img.sprite = nimage;
+                    hiyokonari[i] = true;
+                }
+            }
+        }
         movemode = false;
         if (senteturn) { senteturn = false; } else { senteturn = true; }
     }
@@ -134,6 +158,15 @@ public class Game : MonoBehaviour {
             angle = 0;
             destroyed.name = destroyed.name.Substring(0, 1).ToLower();
             mykomanum++;
+        }
+        if (destroyed.name.StartsWith("h", true, null)) {
+            for (int i = 0; i <= 1; i++) {
+                if (destroyed == hiyoko[i] && hiyokonari[i] == true) {
+                    img = hiyoko[i].GetComponent<Image>();
+                    hiyokonari[i] = false;
+                    img.sprite = himage;
+                }
+            }
         }
         destroyed.transform.SetParent(destination.transform);
         destroyed.transform.localPosition = new Vector3(okiba * 150, 0);
