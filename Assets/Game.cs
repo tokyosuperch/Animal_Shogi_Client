@@ -35,6 +35,8 @@ public class Game : MonoBehaviour {
     bool loginmode = false;
     bool enemymove = false;
     bool nameconvert = false;
+    bool msgshow = false;
+    string usermsg;
     // メッセージを管理するリスト
     private List<string> messages = new List<string>();
     private string currentMessage = string.Empty;
@@ -42,11 +44,14 @@ public class Game : MonoBehaviour {
     NetworkStream stream = null;
     bool isStopReading = false;
     byte[] readbuf;
+    GameObject textObject;
+    Text statusText;
 
     // Use this for initialization
     private IEnumerator Start() {
         MasuInit();
         KomaInit();
+        TextInit();
         keepaliver();
         Debug.Log("START START");
         readbuf = new byte[1024];
@@ -118,6 +123,16 @@ public class Game : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         // メインスレッドでしか呼べない関数対策
+        if (msgshow) {
+            if (usermsg == "") {
+                textObject.SetActive(false);
+                statusText.text = usermsg;
+            } else {
+                textObject.SetActive(true);
+                statusText.text += usermsg;
+            }
+            msgshow = false;
+        }
         if (nameconvert) {
             enemymove = true;
             KomaClick(NameConverter(komatype, beforex, beforey));
@@ -137,6 +152,13 @@ public class Game : MonoBehaviour {
         } else if (message.Substring(message.IndexOf("Your_Turn:") + 10, 1) == "-") {
             iamsente = false;
         }
+        usermsg = "";
+        msgshow = true;
+    }
+
+    public void TextInit() {
+        textObject = GameObject.Find("Text");
+        statusText = textObject.GetComponent<Text>();
     }
 
     public void MasuInit() {
@@ -175,6 +197,7 @@ public class Game : MonoBehaviour {
 
     public void MessageHandler (string msg) {
         string[] line = msg.Split('\n');
+        bool showaction = false;
         for (int i = 0; i < line.Length; i++) {
             if (line[i] != "") Debug.Log(line[i]);
             if (line[i].IndexOf("Your_Turn:") != -1) {
@@ -183,7 +206,14 @@ public class Game : MonoBehaviour {
             }
             if ((line[i].StartsWith("+") && iamsente == false) || (line[i].StartsWith("-") && iamsente == true)) {
                 if (line[i].Substring(2, 1) == "*") {
-                    komatype = line[i].Substring(1, 1);
+                    if (iamsente == null) {
+                        usermsg = "内部エラー";
+                        showaction = true;
+                    } else if (iamsente == true) {
+                        komatype = line[i].Substring(1, 1).ToUpper();
+                    } else {
+                        komatype = line[i].Substring(1, 1).ToLower();
+                    }
                     beforex = -1;
                     beforey = -1;
                 } else {
@@ -196,6 +226,14 @@ public class Game : MonoBehaviour {
                 // メインスレッドしか名前変換ができないため
                 nameconvert = true;
             }
+            if (line[i].StartsWith("#")) {
+                usermsg += line[i] + "\n";
+                showaction = true;
+            }
+        }
+        if (showaction) {
+            msgshow = true;
+            showaction = false;
         }
     }
 
@@ -219,10 +257,14 @@ public class Game : MonoBehaviour {
         if (x == -1 && y == -1) {
             komatype = type;
             for (int i = 0; i < 2; i++) {
-                if (type == "h" && hiyoko[i].name.Length < 3) return "h" + i;
-                if (type == "z" && zou[i].name.Length < 3) return "z" + i;
-                if (type == "k" && kirin[i].name.Length < 3) return "k" + i;
-                if (type == "l" && lion[i].name.Length < 3) return "l" + i;
+                if (hiyoko[i].name.Length < 3 && hiyoko[i].name.Substring(0,1) == type.Substring(0, 1)) return "h" + i;
+                if (zou[i].name.Length < 3 && zou[i].name.Substring(0, 1) == type.Substring(0, 1)) return "z" + i;
+                if (kirin[i].name.Length < 3 && kirin[i].name.Substring(0, 1) == type.Substring(0 ,1)) return "k" + i;
+                if (lion[i].name.Length < 3 && lion[i].name.Substring(0, 1) == type.Substring(0, 1)) return "l" + i;
+                if (hiyoko[i].name.Length < 3 && hiyoko[i].name.Substring(0, 1) == type.Substring(0, 1)) return "h" + i;
+                if (zou[i].name.Length < 3 && zou[i].name.Substring(0, 1) == type.Substring(0, 1)) return "z" + i;
+                if (kirin[i].name.Length < 3 && kirin[i].name.Substring(0, 1) == type.Substring(0, 1)) return "k" + i;
+                if (lion[i].name.Length < 3 && lion[i].name.Substring(0, 1) == type.Substring(0, 1)) return "l" + i;
             }
         } else {
             for (int i = 0; i < 2; i++) {
@@ -243,19 +285,19 @@ public class Game : MonoBehaviour {
                     return "l" + i;
                 }
                 if (hiyoko[i].name == "H" + x + y) {
-                    komatype = "h";
+                    komatype = "H";
                     return "h" + i;
                 }
                 if (zou[i].name == "Z" + x + y) {
-                    komatype = "z";
+                    komatype = "Z";
                     return "z" + i;
                 }
                 if (kirin[i].name == "K" + x + y) {
-                    komatype = "k";
+                    komatype = "K";
                     return "k" + i;
                 }
                 if (lion[i].name == "L" + x + y) {
-                    komatype = "l";
+                    komatype = "L";
                     return "l" + i;
                 }
             }
@@ -271,77 +313,82 @@ public class Game : MonoBehaviour {
         destroyedname = "";
         GameObject temporary = null;
         temporary = ObjectReturner(komaname.Substring(0, 1), int.Parse(komaname.Substring(1, 1)));
-        if (temporary == null) enemymove = false; // エラー時の暴走防止
+        if (temporary == null) { // エラー時の暴走防止
+            usermsg = "内部エラー";
+            msgshow = true;
+            nameconvert = false;
+        }
         if (iamsente == null) {
-        } else if (senteturn && iamsente == true) {
+            usermsg = "内部エラー";
+            msgshow = true;
+        } else {
             char[] initial = temporary.name.Substring(0, 1).ToCharArray();
-            if (char.IsLower(initial[0])) {
-                moving = temporary;
-                if (moving.name.Length >= 3) {
-                    beforex = int.Parse(moving.name.Substring(1, 1));
-                    beforey = int.Parse(moving.name.Substring(2, 1));
-                } else {
-                    beforex = -1;
-                    beforey = -1;
+            if (senteturn && iamsente == true) {
+                if (char.IsLower(initial[0])) {
+                    moving = temporary;
+                    if (moving.name.Length >= 3) {
+                        beforex = int.Parse(moving.name.Substring(1, 1));
+                        beforey = int.Parse(moving.name.Substring(2, 1));
+                    } else {
+                        beforex = -1;
+                        beforey = -1;
+                    }
+                    movemode = true;
+                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                    destroyedname = temporary.name;
+                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
                 }
-                movemode = true;
-            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                destroyedname = temporary.name;
-                MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
-            }
-        } else if (!senteturn && iamsente == false) {
-            char[] initial = temporary.name.Substring(0, 1).ToCharArray();
-            if (char.IsUpper(initial[0])) {
-                moving = temporary;
-                if (moving.name.Length >= 3) {
-                    beforex = int.Parse(moving.name.Substring(1, 1));
-                    beforey = int.Parse(moving.name.Substring(2, 1));
-                } else {
-                    beforex = -1;
-                    beforey = -1;
+            } else if (!senteturn && iamsente == false) {
+                if (char.IsUpper(initial[0])) {
+                    moving = temporary;
+                    if (moving.name.Length >= 3) {
+                        beforex = int.Parse(moving.name.Substring(1, 1));
+                        beforey = int.Parse(moving.name.Substring(2, 1));
+                    } else {
+                        beforex = -1;
+                        beforey = -1;
+                    }
+                    movemode = true;
+                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                    destroyedname = temporary.name;
+                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
                 }
-                movemode = true;
-            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                destroyedname = temporary.name;
-                MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
-            }
-        } else if (enemymove && iamsente == true && !senteturn) {
-            char[] initial = temporary.name.Substring(0, 1).ToCharArray();
-            if (char.IsUpper(initial[0])) {
-                moving = temporary;
-                if (moving.name.Length >= 3) {
-                    beforex = int.Parse(moving.name.Substring(1, 1));
-                    beforey = int.Parse(moving.name.Substring(2, 1));
-                } else {
-                    beforex = -1;
-                    beforey = -1;
+            } else if (enemymove && iamsente == true && !senteturn) {
+                if (char.IsUpper(initial[0])) {
+                    moving = temporary;
+                    if (moving.name.Length >= 3) {
+                        beforex = int.Parse(moving.name.Substring(1, 1));
+                        beforey = int.Parse(moving.name.Substring(2, 1));
+                    } else {
+                        beforex = -1;
+                        beforey = -1;
+                    }
+                    movemode = true;
+                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                    destroyedname = temporary.name;
+                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
                 }
-                movemode = true;
-            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                destroyedname = temporary.name;
-                MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
-            }
-        } else if (enemymove && iamsente == false && senteturn) {
-            char[] initial = temporary.name.Substring(0, 1).ToCharArray();
-            if (char.IsLower(initial[0])) {
-                moving = temporary;
-                if (moving.name.Length >= 3) {
-                    beforex = int.Parse(moving.name.Substring(1, 1));
-                    beforey = int.Parse(moving.name.Substring(2, 1));
-                } else {
-                    beforex = -1;
-                    beforey = -1;
+            } else if (enemymove && iamsente == false && senteturn) {
+                if (char.IsLower(initial[0])) {
+                    moving = temporary;
+                    if (moving.name.Length >= 3) {
+                        beforex = int.Parse(moving.name.Substring(1, 1));
+                        beforey = int.Parse(moving.name.Substring(2, 1));
+                    } else {
+                        beforex = -1;
+                        beforey = -1;
+                    }
+                    movemode = true;
+                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
+                    destroyedname = temporary.name;
+                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
                 }
-                movemode = true;
-            } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                destroyedname = temporary.name;
-                MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
             }
         }
         if (moving != null) {
             if (moving.name.Length < 3) {
                 komauchimode = true;
-                komatype = moving.name.Substring(0, 1).ToLower();
+                komatype = moving.name.Substring(0, 1);
             } else {
                 komauchimode = false;
             }
@@ -349,7 +396,7 @@ public class Game : MonoBehaviour {
     }
 
     public void MasuClick(string mess) {
-        if (movemode == true && moving.transform.root.gameObject != mykoma && moving.transform.root.gameObject != enemykoma) {
+        if (movemode == true) {
             afterx = int.Parse(mess.Substring(0, 1));
             aftery = int.Parse(mess.Substring(1, 1));
             if (CanMove()) {
@@ -360,43 +407,38 @@ public class Game : MonoBehaviour {
     }
 
     public void Move() {
+        bool narimove = false;
         moving.transform.SetParent(masume[afterx, aftery].transform);
         moving.transform.localPosition = new Vector3(0, 0);
         string temp = moving.name;
         moving.name = temp.Substring(0, 1) + afterx + aftery;
-        if (senteturn == true && afterx == 0 && temp.StartsWith("h", false, null)) {
+        if ((senteturn == true && afterx == 0 && temp.StartsWith("h", false, null) || senteturn == false && afterx == 3 && temp.StartsWith("H", false, null)) && komauchimode == false) {
             for (int i = 0; i <= 1; i++) {
                 if (moving == hiyoko[i]) {
                     Image img = hiyoko[i].GetComponent<Image>();
                     img.sprite = nimage;
-                    hiyokonari[i] = true;
-                }
-            }
-        }
-        if (senteturn == false && afterx == 3 && temp.StartsWith("H", false, null)) {
-            for (int i = 0; i <= 1; i++) {
-                if (moving == hiyoko[i]) {
-                    Image img = hiyoko[i].GetComponent<Image>();
-                    img.sprite = nimage;
-                    hiyokonari[i] = true;
+                    narimove = true;
                 }
             }
         }
         movemode = false;
-        if (senteturn && iamsente == true) {
-            if (komauchimode == true) {
-                StartCoroutine(SendMessage("+" + komatype + "*" + (aftery + 1) + ExternalAxis(afterx)));
-            } else {
-                StartCoroutine(SendMessage("+" + (beforey + 1) + ExternalAxis(beforex) + (aftery + 1) + ExternalAxis(afterx)));
+        string extmsg = "";
+        if (senteturn && iamsente == true) extmsg = "+";
+        if (!senteturn && iamsente == false) extmsg = "-";
+        if (komauchimode == true) {
+            extmsg += komatype.ToLower() + "*" + (aftery + 1) + ExternalAxis(afterx);
+        } else {
+            extmsg += (beforey + 1) + ExternalAxis(beforex) + (aftery + 1) + ExternalAxis(afterx);
+        }
+        for (int i = 0; i <= 1; i++) {
+            if (moving == hiyoko[i]) {
+                if (hiyokonari[i] == false && narimove) {
+                    extmsg += "+";
+                    hiyokonari[i] = true;
+                }
             }
         }
-        if (!senteturn && iamsente == false) {
-            if (komauchimode) {
-                StartCoroutine(SendMessage("-" + komatype + "*" + (aftery + 1) + ExternalAxis(afterx)));
-            } else {
-                StartCoroutine(SendMessage("-" + (beforey + 1) + ExternalAxis(beforex) + (aftery + 1) + ExternalAxis(afterx)));
-            }
-        }
+        StartCoroutine(SendMessage(extmsg));
         senteturn = !senteturn;
     }
 
