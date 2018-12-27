@@ -215,6 +215,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114403361116129696, guid: 219ff9b00793a644688a87ca1bfc05e4,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 219ff9b00793a644688a87ca1bfc05e4, type: 2}
   m_IsPrefabParent: 0
@@ -325,6 +330,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114397228482965836, guid: 1704307486c04a949bf54340a15e92c7,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1704307486c04a949bf54340a15e92c7, type: 2}
   m_IsPrefabParent: 0
@@ -453,7 +463,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -575,7 +585,7 @@ Prefab:
     - target: {fileID: 114469652306447774, guid: 1aee0081e6c7bf340ade59de9c1a8714,
         type: 2}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: komaclick
+      value: KomaClick
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1aee0081e6c7bf340ade59de9c1a8714, type: 2}
@@ -682,6 +692,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114204436802327994, guid: 1d6f57cabca47414796fef61487ddc2f,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1d6f57cabca47414796fef61487ddc2f, type: 2}
   m_IsPrefabParent: 0
@@ -797,6 +812,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114252227102080936, guid: d4898ce5947f3434db0a224940ee0c93,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d4898ce5947f3434db0a224940ee0c93, type: 2}
   m_IsPrefabParent: 0
@@ -953,7 +973,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1174,7 +1194,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1274,7 +1294,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1470,6 +1490,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114456003141734238, guid: c140ce1082bdf8643a90ade4820c075c,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c140ce1082bdf8643a90ade4820c075c, type: 2}
   m_IsPrefabParent: 0
@@ -1565,7 +1590,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1665,7 +1690,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1764,7 +1789,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -1879,6 +1904,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114139761126474576, guid: a94e7aa3c5041fa4498137896bb9a64f,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a94e7aa3c5041fa4498137896bb9a64f, type: 2}
   m_IsPrefabParent: 0
@@ -1989,6 +2019,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 967279040}
+    - target: {fileID: 114018667929755438, guid: e3ae46f21eb0f4d458fa1936568ff6f1,
+        type: 2}
+      propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: KomaClick
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e3ae46f21eb0f4d458fa1936568ff6f1, type: 2}
   m_IsPrefabParent: 0
@@ -2084,7 +2119,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2184,7 +2219,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2283,7 +2318,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2383,7 +2418,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -2483,7 +2518,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 967279040}
-          m_MethodName: masuclick
+          m_MethodName: MasuClick
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
