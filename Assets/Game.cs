@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using System;
 using System.Threading;
 using System.Collections;
@@ -44,7 +45,9 @@ public class Game : MonoBehaviour {
     NetworkStream stream = null;
     bool isStopReading = false;
     byte[] readbuf;
+    GameObject rotator;
     GameObject textObject;
+    GameObject select;
     Text statusText;
 
     // Use this for initialization
@@ -87,7 +90,6 @@ public class Game : MonoBehaviour {
         stream = GetNetworkStream();
         int bytes = stream.EndRead(ar);
         string message = enc.GetString(readbuf, 0, bytes);
-        // message = message.Replace("\r", "").Replace("\n", "");
         isStopReading = false;
         messages.Add(message);
         MessageHandler(message);
@@ -193,6 +195,8 @@ public class Game : MonoBehaviour {
         }
         lion[0].name = "l31";
         lion[1].name = "L01";
+        select = GameObject.Find("Select");
+        select.SetActive(false);
     }
 
     public void MessageHandler (string msg) {
@@ -307,12 +311,19 @@ public class Game : MonoBehaviour {
 
     public void KomaClick(string komaname) {
         if(loginmode) {
+            StartCoroutine(SendMessage("AGREE"));
             StartCoroutine(SendMessage("LOGIN:supachan_Client"));
+            if (iamsente == false) {
+                rotator = GameObject.Find("Rotator");
+                rotator.transform.rotation = new Quaternion(0, 0, 180, 0);
+            }
             loginmode = false;
         }
         destroyedname = "";
         GameObject temporary = null;
         temporary = ObjectReturner(komaname.Substring(0, 1), int.Parse(komaname.Substring(1, 1)));
+        select.transform.position = temporary.transform.position;
+        select.SetActive(true);
         if (temporary == null) { // エラー時の暴走防止
             usermsg = "内部エラー";
             msgshow = true;
@@ -401,6 +412,7 @@ public class Game : MonoBehaviour {
             aftery = int.Parse(mess.Substring(1, 1));
             if (CanMove()) {
                 if (destroyedname != "") Destroy(destroyedname);
+                select.SetActive(false);
                 Move();
             }
         }
@@ -517,6 +529,12 @@ public class Game : MonoBehaviour {
         }
         destroyed.transform.SetParent(destination.transform);
         destroyed.transform.localPosition = new Vector3(okiba * 150, 0);
-        destroyed.transform.rotation = new Quaternion(0, 0, angle, 0);
+        destroyed.transform.localRotation = new Quaternion(0, 0, angle, 0);
+    }
+
+    public void ReturnToTitle() {
+        StartCoroutine(SendMessage("-QUIT"));
+        stream = null;
+        SceneManager.LoadScene("Title");
     }
 }
