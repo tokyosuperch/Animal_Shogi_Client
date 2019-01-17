@@ -322,8 +322,10 @@ public class Game : MonoBehaviour {
         destroyedname = "";
         GameObject temporary = null;
         temporary = ObjectReturner(komaname.Substring(0, 1), int.Parse(komaname.Substring(1, 1)));
-        select.transform.position = temporary.transform.position;
-        select.SetActive(true);
+        if ((senteturn == true && iamsente == true) || (senteturn == false && iamsente == false)) {
+            select.transform.position = temporary.transform.position;
+            select.SetActive(true);
+        }
         if (temporary == null) { // エラー時の暴走防止
             usermsg = "内部エラー";
             msgshow = true;
@@ -334,62 +336,18 @@ public class Game : MonoBehaviour {
             msgshow = true;
         } else {
             char[] initial = temporary.name.Substring(0, 1).ToCharArray();
-            if (senteturn && iamsente == true) {
+            if (senteturn) {
                 if (char.IsLower(initial[0])) {
-                    moving = temporary;
-                    if (moving.name.Length >= 3) {
-                        beforex = int.Parse(moving.name.Substring(1, 1));
-                        beforey = int.Parse(moving.name.Substring(2, 1));
-                    } else {
-                        beforex = -1;
-                        beforey = -1;
-                    }
-                    movemode = true;
+                    if (iamsente == true) moving = temporary;
+                    if (iamsente == false && enemymove) moving = temporary;
                 } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
                     destroyedname = temporary.name;
                     MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
                 }
-            } else if (!senteturn && iamsente == false) {
+            } else {
                 if (char.IsUpper(initial[0])) {
-                    moving = temporary;
-                    if (moving.name.Length >= 3) {
-                        beforex = int.Parse(moving.name.Substring(1, 1));
-                        beforey = int.Parse(moving.name.Substring(2, 1));
-                    } else {
-                        beforex = -1;
-                        beforey = -1;
-                    }
-                    movemode = true;
-                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                    destroyedname = temporary.name;
-                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
-                }
-            } else if (enemymove && iamsente == true && !senteturn) {
-                if (char.IsUpper(initial[0])) {
-                    moving = temporary;
-                    if (moving.name.Length >= 3) {
-                        beforex = int.Parse(moving.name.Substring(1, 1));
-                        beforey = int.Parse(moving.name.Substring(2, 1));
-                    } else {
-                        beforex = -1;
-                        beforey = -1;
-                    }
-                    movemode = true;
-                } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
-                    destroyedname = temporary.name;
-                    MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
-                }
-            } else if (enemymove && iamsente == false && senteturn) {
-                if (char.IsLower(initial[0])) {
-                    moving = temporary;
-                    if (moving.name.Length >= 3) {
-                        beforex = int.Parse(moving.name.Substring(1, 1));
-                        beforey = int.Parse(moving.name.Substring(2, 1));
-                    } else {
-                        beforex = -1;
-                        beforey = -1;
-                    }
-                    movemode = true;
+                    if (iamsente == false) moving = temporary;
+                    if (iamsente == true && enemymove) moving = temporary;
                 } else if (movemode == true && komauchimode == false && temporary.name.Length > 1) {
                     destroyedname = temporary.name;
                     MasuClick(temporary.name.Substring(1, 1) + temporary.name.Substring(2, 1));
@@ -397,12 +355,17 @@ public class Game : MonoBehaviour {
             }
         }
         if (moving != null) {
-            if (moving.name.Length < 3) {
+            if (moving.name.Length >= 3) {
+                beforex = int.Parse(moving.name.Substring(1, 1));
+                beforey = int.Parse(moving.name.Substring(2, 1));
+                komauchimode = false;
+            } else {
+                beforex = -1;
+                beforey = -1;
                 komauchimode = true;
                 komatype = moving.name.Substring(0, 1);
-            } else {
-                komauchimode = false;
             }
+            movemode = true;
         }
     }
 
