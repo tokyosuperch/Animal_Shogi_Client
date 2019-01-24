@@ -312,7 +312,7 @@ public class Game : MonoBehaviour {
     public void KomaClick(string komaname) {
         if(loginmode) {
             StartCoroutine(SendMessage("AGREE"));
-            StartCoroutine(SendMessage("LOGIN:supachan_Client"));
+            StartCoroutine(SendMessage("LOGIN:" + Title.username));
             if (iamsente == false) {
                 rotator = GameObject.Find("Rotator");
                 rotator.transform.rotation = new Quaternion(0, 0, 180, 0);
