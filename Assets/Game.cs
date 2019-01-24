@@ -413,6 +413,7 @@ public class Game : MonoBehaviour {
                 }
             }
         }
+        KomaClean();
         StartCoroutine(SendMessage(extmsg));
         senteturn = !senteturn;
     }
@@ -467,17 +468,15 @@ public class Game : MonoBehaviour {
         string converted = NameConverter("", int.Parse(name.Substring(1, 1)), int.Parse(name.Substring(2, 1)));
         GameObject destroyed = ObjectReturner(converted.Substring(0,1), int.Parse(converted.Substring(1,1)));
         GameObject destination;
-        int okiba, angle;
+        int angle;
         if (senteturn) {
             destination = mykoma;
-            okiba = mykomanum;
             angle = 0;
             destroyed.name = name.Substring(0, 1).ToLower() + converted.Substring(1, 1);
             mykomanum++;
         } else {
             destination = enemykoma;
             angle = 180;
-            okiba = enemykomanum;
             destroyed.name = name.Substring(0, 1).ToUpper() + converted.Substring(1, 1);
             enemykomanum--;
         }
@@ -491,8 +490,28 @@ public class Game : MonoBehaviour {
             }
         }
         destroyed.transform.SetParent(destination.transform);
-        destroyed.transform.localPosition = new Vector3(okiba * 150, 0);
+        // 置場はKomaClean()での解決に変更
+        destroyed.transform.localPosition = new Vector3(0, 0);
         destroyed.transform.localRotation = new Quaternion(0, 0, angle, 0);
+    }
+
+    public void KomaClean() {
+        int my = 0;
+        int enemy = 0;
+        foreach (Transform child in mykoma.transform) {
+            //child is your child transform
+            if (child.localPosition.x != my * 150) {
+                child.localPosition = new Vector3(my * 150, 0);
+            }
+            my++;
+        }
+        foreach (Transform child in enemykoma.transform) {
+            //child is your child transform
+            if (child.localPosition.x != enemy * 150) {
+                child.localPosition = new Vector3(enemy * 150, 0);
+            }
+            enemy--;
+        }
     }
 
     public void ReturnToTitle() {
